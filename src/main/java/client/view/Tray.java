@@ -8,11 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JPopupMenu;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 
 import static client.Main.primaryStage;
 
@@ -56,11 +51,11 @@ public class Tray {
                 }
             };
 
-            final JPopupMenu popup = new JPopupMenu();
-            JMenuItem exit = new JMenuItem("Выход");
-            JMenuItem open = new JMenuItem("Развернуть");
-            JMenuItem close = new JMenuItem("Свернуть в трей");
-            JMenuItem quietMode = new JMenuItem("Тихий режим");
+            final PopupMenu popup = new PopupMenu();
+            MenuItem exit = new MenuItem("Выход");
+            MenuItem open = new MenuItem("Развернуть");
+            MenuItem close = new MenuItem("Свернуть в трей");
+            MenuItem quietMode = new MenuItem("Тихий режим");
 
             trayIcon.addActionListener(event-> Platform.runLater(new Runnable(){@Override public void run() {trayOFF(currentStage == null?primaryStage:currentStage);}}));
             open.addActionListener(event->Platform.runLater(new Runnable(){@Override public void run() {trayOFF(currentStage == null?primaryStage:currentStage);}}));
@@ -75,49 +70,8 @@ public class Tray {
             popup.add(close);
             popup.addSeparator();
             popup.add(exit);
-            popup.setFocusable(true);
-            popup.requestFocus();
-
-            popup.addPopupMenuListener(new PopupMenuListener() {
-                @Override
-                public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(6000);
-                            } catch (InterruptedException e1) {
-                                e1.printStackTrace();
-                            }
-                            popup.setVisible(false);
-                        }
-                    }).start();
-
-                }
-
-                @Override
-                public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-
-                }
-
-                @Override
-                public void popupMenuCanceled(PopupMenuEvent e) {
-
-                }
-            });
-
-            trayIcon.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    super.mouseReleased(e);
-                    if (e.isPopupTrigger()){
-                        popup.setLocation(e.getX(), e.getY());
-                        popup.setInvoker(popup);
-                        popup.setVisible(true);
-                    }
-                }
-            });
-
+ 
+            trayIcon.setPopupMenu(popup);
             try {
                 tray.add(trayIcon);
             } catch (AWTException e) {
